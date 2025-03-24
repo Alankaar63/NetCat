@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 from utils import DataPreprocessor, ModelSaver
 
 class ModelTrainer:
-    def __init__(self, data_path, model_path='./backend/model.pkl'):
+    def __init__(self, data_path, model_path='./backend/models/ssp_model.pkl'):
         self.data_path = os.path.abspath(data_path)  # Convert to absolute path
         self.model_path = os.path.abspath(model_path)  # Convert to absolute path
 
@@ -45,5 +45,5 @@ class ModelTrainer:
         return ensemble
 
 if __name__ == "__main__":
-    trainer = ModelTrainer(data_path='./backend/data/raw.csv', model_path='./backend/model.pkl')
+    trainer = ModelTrainer(data_path='./backend/data/raw.csv', model_path='./backend/models/ssp_model.pkl')
     trainer.train()

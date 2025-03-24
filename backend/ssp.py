@@ -1,7 +1,18 @@
-# backend/inference.py
+# backend/ssp.py
 import numpy as np
 import pandas as pd
 from utils import ModelLoader
+import joblib
+
+
+# Load model
+ssp_model = joblib.load("./backend/models/ssp_model.pkl")
+
+def predict_signal_strength(data):
+    df = pd.DataFrame([data])  # Convert JSON to DataFrame
+    prediction = ssp_model.predict(df)
+    return float(prediction[0])  # Return as a number
+
 
 class InferenceEngine:
     def __init__(self, model_path='./backend/models/ssp_model.pkl'):

@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Load dataset
-data_cleaned = pd.read_csv('signal_metrics.csv')
+data_cleaned = pd.read_csv('./backend/data/raw.csv')
 
 # Create 'Failure' column
 data_cleaned['Failure'] = (
@@ -84,7 +84,7 @@ import joblib
 import logging
 
 # Save the model
-joblib.dump(model, "model.pkl")
+joblib.dump(model, "/models/nfp_model.pkl")
 
 # Save the encoder
 joblib.dump(ohe, "ohe.pkl")
@@ -92,5 +92,5 @@ joblib.dump(ohe, "ohe.pkl")
 selected_features = ["Signal Strength (dBm)", "BB60C Measurement (dBm)", "srsRAN Measurement (dBm)", 
                      "BladeRFxA9 Measurement (dBm)", "Latency (ms)"] + list(ohe.get_feature_names_out(['Network Type']))
 
-joblib.dump(selected_features, "features.pkl")
+joblib.dump(selected_features, "./models/nfp_features.pkl")
 

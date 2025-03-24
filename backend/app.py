@@ -1,57 +1,31 @@
-# backend/app.py
 from flask import Flask, request, jsonify
-from inference import InferenceEngine
+from ssp import predict_signal_strength
+from nfp import predict_network_failure
 
 app = Flask(__name__)
-engine = InferenceEngine(model_path='./model.pkl')
 
-@app.route('/predict', methods=['GET'])
-def predict():
-    try:
-        lat = float(request.args.get('lat'))
-        lon = float(request.args.get('lon'))
-        throughput = float(request.args.get('throughput', 10))  # Default value if not provided
-        latency = float(request.args.get('latency', 100))
-    except (TypeError, ValueError):
-        return jsonify({'error': 'Invalid input parameters'}), 400
+@app.route("/")
+def home():
+    return jsonify({"message": "AI Network Monitoring API is running!"})
 
-    features = {
-        'Latitude': lat,
-        'Longitude': lon,
-        'Data Throughput (Mbps)': throughput,
-        'Latency (ms)': latency
-    }
-    prediction = engine.predict(features)
-    return jsonify({
-        'Latitude': lat,
-        'Longitude': lon,
-        'Predicted Signal Strength (dBm)': prediction
-    })
+@app.route("/predict_signal", methods=["POST"])
+def predict_signal():
+    data = request.get_json()
+    prediction = predict_signal_strength(data)
+    return jsonify({"signal_strength": prediction})
 
-@app.route('/heatmap', methods=['GET'])
+@app.route("/predict_failure", methods=["POST"])
+def predict_failure():
+    data = request.get_json()
+    prediction = predict_network_failure(data)
+    return jsonify({"network_failure": prediction})
+
+@app.route("/heatmap", methods=["POST"])
 def heatmap():
-    try:
-        min_lat = float(request.args.get('min_lat'))
-        max_lat = float(request.args.get('max_lat'))
-        min_lon = float(request.args.get('min_lon'))
-        max_lon = float(request.args.get('max_lon'))
-        grid_size = int(request.args.get('grid_size', 50))
-        throughput = float(request.args.get('throughput', 10))
-        latency = float(request.args.get('latency', 100))
-    except (TypeError, ValueError):
-        return jsonify({'error': 'Invalid input parameters'}), 400
+    data = request.get_json()
+    signal = predict_signal_strength(data)
+    failure = predict_network_failure(data)
+    return jsonify({"signal_strength": signal, "network_failure": failure})
 
-    heatmap_df = engine.generate_heatmap_grid(
-        lat_range=(min_lat, max_lat),
-        lon_range=(min_lon, max_lon),
-        grid_size=grid_size,
-        fixed_throughput=throughput,
-        fixed_latency=latency
-    )
-    # Convert the DataFrame to a list of dictionaries
-    heatmap_data = heatmap_df.to_dict(orient='records')
-    return jsonify(heatmap_data)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001, debug=True)

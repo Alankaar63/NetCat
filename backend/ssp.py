@@ -4,7 +4,7 @@ import pandas as pd
 from utils import ModelLoader
 
 class InferenceEngine:
-    def __init__(self, model_path='./model.pkl'):
+    def __init__(self, model_path='./backend/models/ssp_model.pkl'):
         self.model = ModelLoader.load_model(model_path)
 
     def predict(self, features: dict):
@@ -53,7 +53,7 @@ class InferenceEngine:
         return pd.DataFrame(heatmap_data)
 
 if __name__ == "__main__":
-    engine = InferenceEngine(model_path='./model.pkl')
+    engine = InferenceEngine(model_path='./backend/models/ssp_model.pkl')
     # Example prediction:
     features = {
         'Latitude': 25.6,
@@ -61,4 +61,4 @@ if __name__ == "__main__":
         'Data Throughput (Mbps)': 10,
         'Latency (ms)': 100
     }
-    print("Predicted Signal Strength:", engine.predict(features))
+    print("Predicted Signal Strength:", engine.predict(features), "dBm")
